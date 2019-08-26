@@ -51,9 +51,9 @@ stages:
         ArtifactName: 'drop'
         publishLocation: 'Container'
 
-- stage: ProvisionAndDeployDevInfra
+- stage: ProvisionAndDeployDev
   jobs:
-  - deployment: ProvisionAndDeployDevInfra
+  - deployment: ProvisionAndDeployDev
     displayName: Provision And Deploy Dev
     pool:
       name: Hosted Windows 2019 with VS2019
