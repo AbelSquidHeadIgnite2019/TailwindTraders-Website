@@ -12,7 +12,7 @@ variables:
   buildConfiguration: 'Release'
   servicePrincipal: http://AbelDeployPrincipal
   servicePrincipalTenant: 72f988bf-86f1-41af-91ab-2d7cd011db47
-  azureSubscriptionName: ca-abewan-dev-test
+  azureSubscriptionName: ca-abewan-demo-test
   resourceGroupName: abelignitefy2020-devops
   location: southcentralus
   webAppSku: S1
