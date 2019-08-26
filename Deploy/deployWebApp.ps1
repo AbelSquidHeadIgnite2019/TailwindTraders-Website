@@ -148,22 +148,4 @@ az webapp config appsettings set `
                     XDT_MicrosoftApplicationInsights_BaseExtension=~1
 Write-Output "done setting and configuring application insight for web app"
 Write-Output ""
-
-# this sets application insight to web app
-#
-Write-Output "setting and configuring application insight for node 1..."
-az webapp config appsettings set `
-    --resource-group $resourceGroupName `
-    --name $($webAppName + "2") `
-    --slot-settings APPINSIGHTS_INSTRUMENTATIONKEY=$instrumentationKey `
-                    ApplicationInsightsAgent_EXTENSION_VERSION=~2 `
-                    XDT_MicrosoftApplicationInsights_Mode=recommended `
-                    APPINSIGHTS_PROFILERFEATURE_VERSION=1.0.0 `
-                    DiagnosticServices_EXTENSION_VERSION=~3 `
-                    APPINSIGHTS_SNAPSHOTFEATURE_VERSION=1.0.0 `
-                    SnapshotDebugger_EXTENSION_VERSION=~1 `
-                    InstrumentationEngine_EXTENSION_VERSION=~1 `
-                    XDT_MicrosoftApplicationInsights_BaseExtension=~1
-Write-Output "done setting and configuring application insight for node 2"
-Write-Output ""
 #endregion
