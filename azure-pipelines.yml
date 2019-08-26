@@ -67,5 +67,5 @@ stages:
 
           - task: PowerShell@2
             inputs:
-              filePath: '$(Pipeline.Workspace)/drop/Deploy/provisionWebApp.ps1'
+              filePath: '$(Pipeline.Workspace)/drop/deployWebApp.ps1'
               arguments: '-servicePrincipal $(servicePrincipal) -servicePrincipalSecret $(servicePrincipalSecret)'
