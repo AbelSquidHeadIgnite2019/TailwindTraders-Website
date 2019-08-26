@@ -32,7 +32,15 @@ stages:
     - task: NuGetCommand@2
       inputs:
         restoreSolution: '$(solution)'
-    - task: PowerShell@2
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Write your PowerShell commands here.
+      
+      Write-Host "Hello World"
+      pwd
+      ls
     - task: VSBuild@1
       inputs:
         solution: '$(solution)'
