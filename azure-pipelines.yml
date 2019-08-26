@@ -13,6 +13,10 @@ variables:
   servicePrincipal: http://AbelDeployDemoPrincipal
   servicePrincipalTenant: 72f988bf-86f1-41af-91ab-2d7cd011db47
   azureSubscriptionName: ca-abewan-dev-test
+  resourceGroupName: abelignitefy2020-devops
+  location: southcentralus
+  webAppSku: S1
+  storageAccountSku: Standard_LRS
 
 stages:
 - stage: build
@@ -59,6 +63,7 @@ stages:
       name: Hosted Windows 2019 with VS2019
     variables:
       webAppName: tailwindtraders-dev
+      storageAccountName: tailwindtradersstorage-dev
     environment: 'tailwindtraders-dev'
     strategy:
       runOnce:
@@ -77,4 +82,4 @@ stages:
           - task: PowerShell@2
             inputs:
               filePath: '$(Pipeline.Workspace)/drop/deployWebApp.ps1'
-              arguments: '-servicePrincipal $(servicePrincipal) -servicePrincipalSecret $(servicePrincipalSecret) -servicePrincipalTenantId $(servicePrincipalTenant) -azureSubscriptionName $(azureSubscriptionName)'
+              arguments: '-servicePrincipal $(servicePrincipal) -servicePrincipalSecret $(servicePrincipalSecret) -servicePrincipalTenantId $(servicePrincipalTenant) -azureSubscriptionName $(azureSubscriptionName) -resourceGroupName $(resourceGroupName) -location $(location) -webAppName $(webAppName) -webAppSku $(webAppSku) -storageAccountName $(storageAccountName) -storageAccountSku $(storageAccountSku)'
