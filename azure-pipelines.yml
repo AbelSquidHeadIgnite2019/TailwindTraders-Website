@@ -32,11 +32,6 @@ stages:
     - task: NuGetCommand@2
       inputs:
         restoreSolution: '$(solution)'
-    
-    - task: CacheBeta@1
-      inputs:
-        key: 'npm'
-        path: '$(Build.SourcesDirectory)/Source/Tailwind.Traders.Web/ClientApp/node_modules'
         
     - task: VSBuild@1
       inputs:
