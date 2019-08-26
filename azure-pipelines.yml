@@ -10,6 +10,9 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  servicePrincipal: http://AbelDeployDemoPrincipal
+  servicePrincipalTenant: 72f988bf-86f1-41af-91ab-2d7cd011db47
+  azureSubscriptionName: ca-abewan-dev-test
 
 stages:
 - stage: build
@@ -65,7 +68,13 @@ stages:
             artifact: drop
             patterns: '**/*'
 
+          - task: AzureKeyVault@1
+            inputs:
+              azureSubscription: 'ca-abewan-demo-test(e97f6c4e-c830-479b-81ad-1aff1dd07470)'
+              KeyVaultName: 'AbelSharedKeyVault'
+              SecretsFilter: '*'
+
           - task: PowerShell@2
             inputs:
               filePath: '$(Pipeline.Workspace)/drop/deployWebApp.ps1'
-              arguments: '-servicePrincipal $(servicePrincipal) -servicePrincipalSecret $(servicePrincipalSecret)'
+              arguments: '-servicePrincipal $(servicePrincipal) -servicePrincipalSecret $(servicePrincipalSecret) -servicePrincipalTenantId $(servicePrincipalTenant) -azureSubscriptionName $(azureSubscriptionName)'
