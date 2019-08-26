@@ -77,12 +77,12 @@ stages:
             inputs:
               azureSubscription: 'ca-abewan-demo-test(e97f6c4e-c830-479b-81ad-1aff1dd07470)'
               KeyVaultName: 'AbelSharedKeyVault'
-              SecretsFilter: '*'
+              SecretsFilter: 'ignitefy20*'
 
           - task: PowerShell@2
             inputs:
               filePath: '$(Pipeline.Workspace)/drop/deployWebApp.ps1'
-              arguments: '-servicePrincipal $(servicePrincipal) -servicePrincipalSecret $(servicePrincipalSecret) -servicePrincipalTenantId $(servicePrincipalTenant) -azureSubscriptionName $(azureSubscriptionName) -resourceGroupName $(resourceGroupName) -location $(location) -webAppName $(webAppName) -webAppSku $(webAppSku) -storageAccountName $(storageAccountName) -storageAccountSku $(storageAccountSku)'
+              arguments: '-servicePrincipal $(servicePrincipal) -servicePrincipalSecret $(ignitefy20serviceprincipalsecret) -servicePrincipalTenantId $(servicePrincipalTenant) -azureSubscriptionName $(azureSubscriptionName) -resourceGroupName $(resourceGroupName) -location $(location) -webAppName $(webAppName) -webAppSku $(webAppSku) -storageAccountName $(storageAccountName) -storageAccountSku $(storageAccountSku)'
 
           - task: AzureRmWebAppDeployment@4
             inputs:
