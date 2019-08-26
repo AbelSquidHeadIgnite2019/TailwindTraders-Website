@@ -37,8 +37,36 @@ stages:
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
 
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: 'Deploy'
+        Contents: 'deployWebApp.ps1'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'drop'
         publishLocation: 'Container'
+
+- stage: ProvisionAndDeployDevInfra
+  jobs:
+  - deployment: ProvisionAndDeployDevInfra
+    displayName: Provision And Deploy Dev
+    pool:
+      name: Hosted Windows 2019 with VS2019
+    variables:
+      webAppName: tailwindtraders-dev
+    environment: 'tailwindtraders-dev'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: drop
+            patterns: '**/*'
+
+          - task: PowerShell@2
+            inputs:
+              filePath: '$(Pipeline.Workspace)/drop/Deploy/provisionWebApp.ps1'
+              arguments: '-servicePrincipal $(servicePrincipal) -servicePrincipalSecret $(servicePrincipalSecret)'
