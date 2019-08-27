@@ -6,30 +6,89 @@
 trigger:
 - master
 
-pool:
-  vmImage: 'windows-latest'
-
 variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  servicePrincipal: http://AbelDeployPrincipal
+  servicePrincipalTenant: 72f988bf-86f1-41af-91ab-2d7cd011db47
+  azureSubscriptionName: ca-abewan-demo-test
+  resourceGroupName: abelignitefy2020-devops
+  location: southcentralus
+  webAppSku: S1
+  storageAccountSku: Standard_LRS
 
-steps:
-- task: NuGetToolInstaller@1
+stages:
+- stage: build
+  jobs:
+  - job: BuildJob
+    pool:
+      vmImage: 'windows-latest'
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
+    steps:
 
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    - task: NuGetToolInstaller@1
 
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '$(solution)'
+        
+    - task: VSBuild@1
+      inputs:
+        solution: '$(solution)'
+        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
 
+    - task: VSTest@2
+      inputs:
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: 'Deploy'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+
+- stage: ProvisionAndDeployDev
+  jobs:
+  - deployment: ProvisionAndDeployDev
+    displayName: Provision And Deploy Dev
+    pool:
+      name: Hosted Windows 2019 with VS2019
+    variables:
+      webAppName: tailwindtraders-dev
+      storageAccountName: tailwindtradersstorage-dev
+    environment: 'tailwindtraders-dev'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: drop
+            patterns: '**/*'
+
+          - task: AzureKeyVault@1
+            inputs:
+              azureSubscription: 'ca-abewan-demo-test(e97f6c4e-c830-479b-81ad-1aff1dd07470)'
+              KeyVaultName: 'AbelSharedKeyVault'
+              SecretsFilter: '*'
+
+          - task: PowerShell@2
+            inputs:
+              filePath: '$(Pipeline.Workspace)/drop/deployWebApp.ps1'
+              arguments: '-servicePrincipal $(servicePrincipal) -servicePrincipalSecret $(ignitefy20serviceprincipalsecret) -servicePrincipalTenantId $(servicePrincipalTenant) -azureSubscriptionName $(azureSubscriptionName) -resourceGroupName $(resourceGroupName) -location $(location) -webAppName $(webAppName) -webAppSku $(webAppSku) -storageAccountName $(storageAccountName) -storageAccountSku $(storageAccountSku)'
+
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'ca-abewan-demo-test(e97f6c4e-c830-479b-81ad-1aff1dd07470)'
+              appType: 'webApp'
+              WebAppName: '$(webAppName)'
+              packageForLinux: '$(Pipeline.Workspace)/drop/**/*.zip'
