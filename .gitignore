@@ -9,6 +9,9 @@
 *.userosscache
 *.sln.docstates
 
+# User-specific files (Azure DevOps)
+azure-pipelines abel.yml
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
