@@ -10,14 +10,7 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  servicePrincipal: http://AbelDeployPrincipal
-  servicePrincipalTenant: 72f988bf-86f1-41af-91ab-2d7cd011db47
-  azureSubscriptionName: ca-bbenz-demo-test
-  resourceGroupName: bbenztailwind-frontend
-  location: westus2
-  webAppSku: S1
-  storageAccountSku: Standard_LRS
-
+  
 stages:
 - stage: build
   jobs:
@@ -55,40 +48,3 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'drop'
         publishLocation: 'Container'
-
-- stage: ProvisionAndDeployDev
-  jobs:
-  - deployment: ProvisionAndDeployDev
-    displayName: Provision And Deploy Dev
-    pool:
-      name: Hosted Windows 2019 with VS2019
-    variables:
-      webAppName: bbenztailwind0828-dev
-      storageAccountName: bbenztailwindstorage0828-dev
-    environment: 'bbenztailwind0828-dev'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - download: current
-            artifact: drop
-            patterns: '**/*'
-
-          - task: AzureKeyVault@1
-            inputs:
-              azureSubscription: 'ca-abewan-demo-test(e97f6c4e-c830-479b-81ad-1aff1dd07470)'
-              KeyVaultName: 'AbelSharedKeyVault'
-              SecretsFilter: '*'
-
-          - task: PowerShell@2
-            inputs:
-              filePath: '$(Pipeline.Workspace)/drop/deployWebApp.ps1'
-              arguments: '-servicePrincipal $(servicePrincipal) -servicePrincipalSecret $(ignitefy20serviceprincipalsecret) -servicePrincipalTenantId $(servicePrincipalTenant) -azureSubscriptionName $(azureSubscriptionName) -resourceGroupName $(resourceGroupName) -location $(location) -webAppName $(webAppName) -webAppSku $(webAppSku) -storageAccountName $(storageAccountName) -storageAccountSku $(storageAccountSku)'
-
-          - task: AzureRmWebAppDeployment@4
-            inputs:
-              ConnectionType: 'AzureRM'
-              azureSubscription: 'ca-bbenz-demo-test(c5bd7244-ab30-4473-8e88-d4d58b246c94)'
-              appType: 'webApp'
-              WebAppName: '$(webAppName)'
-              packageForLinux: '$(Pipeline.Workspace)/drop/**/*.zip'
