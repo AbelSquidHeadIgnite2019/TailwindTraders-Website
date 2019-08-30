@@ -26,12 +26,19 @@ param(
     
     [Parameter(Mandatory = $True)]
     [string]
-    $webAppName,
+    $appPlanName,
+
+    [Parameter(Mandatory = $True)]
+    [string]
+    $stagingAppName,
+
+    [Parameter(Mandatory = $True)]
+    [string]
+    $productionAppName,
 
     [Parameter(Mandatory = $True)]
     [string]
     $webAppSku,
-
 
     [Parameter(Mandatory = $True)]
     [string]
