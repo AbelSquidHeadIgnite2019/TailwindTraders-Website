@@ -85,7 +85,7 @@ Write-Output ""
 Write-Output "creating app service plan..."
 try {
     az appservice plan create `
-    --name $("$webAppName" + "plan") `
+    --name $("$appPlanName") `
     --resource-group $resourceGroupName `
     --sku $webAppSku
 }
@@ -95,14 +95,24 @@ catch {
 Write-Output "done creating app service plan"
 Write-Output ""
 
-Write-Output "creating web app..."
+Write-Output "creating staging web app..."
 try {
     az webapp create `
-    --name $webAppName `
-    --plan $("$webAppName" + "plan") `
+    --name $stagingAppName `
+    --plan $("$appPlanName") `
     --resource-group $resourceGroupName
 
 }
+
+Write-Output "creating production web app..."
+try {
+    az webapp create `
+    --name $productionAppName `
+    --plan $("$appPlanName") `
+    --resource-group $resourceGroupName
+
+}
+
 catch {
     Write-Output "web app already exists"
 }

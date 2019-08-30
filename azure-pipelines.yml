@@ -10,7 +10,14 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  
+  servicePrincipal: http://bbenzsp20190901
+  servicePrincipalTenant: 72f988bf-86f1-41af-91ab-2d7cd011db47
+  azureSubscriptionName: ca-bbenz-demo-test
+  resourceGroupName: bbenztailwind-frontend
+  location: westus2
+  webAppSku: S1
+  storageAccountSku: Standard_LRS
+
 stages:
 - stage: build
   jobs:
@@ -48,3 +55,42 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'drop'
         publishLocation: 'Container'
+
+- stage: ProvisionAndDeployDev
+  jobs:
+  - deployment: ProvisionAndDeployDev
+    displayName: Provision And Deploy Dev
+    pool:
+      name: Hosted Windows 2019 with VS2019
+    variables:
+      appPlanName: ASP-bbenztailwindfrontend-8dd1
+      stagingAppName: bbenztailwindstaging
+      productionAppName: bbenztailwindproduction
+      storageAccountName: bbenztailwindstagingstorage
+    environment: 'bbenztailwinddevops'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: drop
+            patterns: '**/*'
+
+          - task: AzureKeyVault@1
+            inputs:
+              azureSubscription: 'ca-bbenz-demo-test (c5bd7244-ab30-4473-8e88-d4d58b246c94)'
+              KeyVaultName: 'bbenzkeyvault'
+              SecretsFilter: '*'
+
+          - task: PowerShell@2
+            inputs:
+              filePath: '$(Pipeline.Workspace)/drop/deployWebApp.ps1'
+              arguments: '-servicePrincipal $(servicePrincipal) -servicePrincipalSecret $(ignitefy20serviceprincipalsecret) -servicePrincipalTenantId $(servicePrincipalTenant) -azureSubscriptionName $(azureSubscriptionName) -resourceGroupName $(resourceGroupName) -location $(location) -appPlanName $(appPlanName) -stagingAppName $(stagingAppName) -productionAppName $(productionAppName) -webAppSku $(webAppSku) -storageAccountName $(storageAccountName) -storageAccountSku $(storageAccountSku)'
+
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'ca-bbenz-demo-test (c5bd7244-ab30-4473-8e88-d4d58b246c94)'
+              appType: 'webApp'
+              WebAppName: '$(webAppName)'
+              packageForLinux: '$(Pipeline.Workspace)/drop/**/*.zip'
