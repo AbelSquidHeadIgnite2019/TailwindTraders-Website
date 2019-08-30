@@ -111,6 +111,10 @@ try {
 
 }
 
+catch {
+    Write-Output "staging web app already exists"
+}
+
 Write-Output "creating production web app..."
 try {
     az webapp create `
@@ -121,8 +125,9 @@ try {
 }
 
 catch {
-    Write-Output "web app already exists"
+    Write-Output "production web app already exists"
 }
+
 Write-Output "done creating web apps"
 Write-Output ""
 #endregion
