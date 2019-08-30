@@ -63,9 +63,11 @@ stages:
     pool:
       name: Hosted Windows 2019 with VS2019
     variables:
-      webAppName: bbenztailwindstaging
+      appPlanName: ASP-bbenztailwindfrontend-8dd1
+      stagingAppName: bbenztailwindstaging
+      productionAppName: bbenztailwindproduction
       storageAccountName: bbenztailwindstagingstorage
-    environment: 'bbenztailwindstaging'
+    environment: 'bbenztailwinddevops'
     strategy:
       runOnce:
         deploy:
@@ -83,7 +85,7 @@ stages:
           - task: PowerShell@2
             inputs:
               filePath: '$(Pipeline.Workspace)/drop/deployWebApp.ps1'
-              arguments: '-servicePrincipal $(servicePrincipal) -servicePrincipalSecret $(ignitefy20serviceprincipalsecret) -servicePrincipalTenantId $(servicePrincipalTenant) -azureSubscriptionName $(azureSubscriptionName) -resourceGroupName $(resourceGroupName) -location $(location) -webAppName $(webAppName) -webAppSku $(webAppSku) -storageAccountName $(storageAccountName) -storageAccountSku $(storageAccountSku)'
+              arguments: '-servicePrincipal $(servicePrincipal) -servicePrincipalSecret $(ignitefy20serviceprincipalsecret) -servicePrincipalTenantId $(servicePrincipalTenant) -azureSubscriptionName $(azureSubscriptionName) -resourceGroupName $(resourceGroupName) -location $(location) -appPlanName $(appPlanName) -stagingAppName $(stagingAppName) -productionAppName $(productionAppName) -webAppSku $(webAppSku) -storageAccountName $(storageAccountName) -storageAccountSku $(storageAccountSku)'
 
           - task: AzureRmWebAppDeployment@4
             inputs:
