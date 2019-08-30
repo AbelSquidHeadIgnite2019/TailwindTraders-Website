@@ -87,6 +87,14 @@ stages:
               filePath: '$(Pipeline.Workspace)/drop/deployWebApp.ps1'
               arguments: '-servicePrincipal $(servicePrincipal) -servicePrincipalSecret $(ignitefy20serviceprincipalsecret) -servicePrincipalTenantId $(servicePrincipalTenant) -azureSubscriptionName $(azureSubscriptionName) -resourceGroupName $(resourceGroupName) -location $(location) -appPlanName $(appPlanName) -stagingAppName $(stagingAppName) -productionAppName $(productionAppName) -webAppSku $(webAppSku) -storageAccountName $(storageAccountName) -storageAccountSku $(storageAccountSku)'
 
+- task: AzureRmWebAppDeployment@3
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'ca-bbenz-demo-test (c5bd7244-ab30-4473-8e88-d4d58b246c94)'
+              appType: 'webApp'
+              WebAppName: '$(stagingAppName)'
+              packageForLinux: '$(Pipeline.Workspace)/drop/**/*.zip'
+
           - task: AzureRmWebAppDeployment@4
             inputs:
               ConnectionType: 'AzureRM'
