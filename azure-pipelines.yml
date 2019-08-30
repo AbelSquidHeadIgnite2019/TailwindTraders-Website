@@ -92,5 +92,5 @@ stages:
               ConnectionType: 'AzureRM'
               azureSubscription: 'ca-bbenz-demo-test (c5bd7244-ab30-4473-8e88-d4d58b246c94)'
               appType: 'webApp'
-              WebAppName: '$(webAppName)'
+              WebAppName: '$(productionAppName)'
               packageForLinux: '$(Pipeline.Workspace)/drop/**/*.zip'
