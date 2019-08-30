@@ -123,7 +123,7 @@ try {
 catch {
     Write-Output "web app already exists"
 }
-Write-Output "done creating web app"
+Write-Output "done creating web apps"
 Write-Output ""
 #endregion
 
@@ -135,7 +135,7 @@ Write-Output "creating application insight for the web app..."
 $appInsightCreateResponse=$(az resource create `
     --resource-group $resourceGroupName `
     --resource-type "Microsoft.Insights/components" `
-    --name $($webAppName + "AppInsight") `
+    --name $($productionAppName + "AppInsight") `
     --location $location `
     --properties '{\"Application_Type\":\"web\"}') | ConvertFrom-Json
 Write-Output "done creating app insight for web app: $appInsightCreateResponse"
@@ -153,7 +153,7 @@ Write-Output ""
 Write-Output "setting and configuring application insight for web app..."
 az webapp config appsettings set `
     --resource-group $resourceGroupName `
-    --name $webAppName `
+    --name $productionAppName `
     --slot-settings APPINSIGHTS_INSTRUMENTATIONKEY=$instrumentationKey `
                     ApplicationInsightsAgent_EXTENSION_VERSION=~2 `
                     XDT_MicrosoftApplicationInsights_Mode=recommended `
@@ -163,6 +163,6 @@ az webapp config appsettings set `
                     SnapshotDebugger_EXTENSION_VERSION=~1 `
                     InstrumentationEngine_EXTENSION_VERSION=~1 `
                     XDT_MicrosoftApplicationInsights_BaseExtension=~1
-Write-Output "done setting and configuring application insight for web app"
+Write-Output "done setting and configuring application insight for production web app"
 Write-Output ""
 #endregion
