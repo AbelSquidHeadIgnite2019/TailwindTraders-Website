@@ -10,10 +10,10 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  servicePrincipal: http://bbenzsp20190901
+  servicePrincipal: http://AbelDeployDemoPrincipal
   servicePrincipalTenant: 72f988bf-86f1-41af-91ab-2d7cd011db47
-  azureSubscriptionName: ca-bbenz-demo-test
-  resourceGroupName: bbenztailwind-frontend
+  azureSubscriptionName: AbelDemoSubscription
+  resourceGroupName: TailwindTraders-Website-Ignite2019-RG
   location: westus2
   webAppSku: S1
   storageAccountSku: Standard_LRS
@@ -63,10 +63,10 @@ stages:
     pool:
       name: Hosted Windows 2019 with VS2019
     variables:
-      appPlanName: ASP-bbenztailwindfrontend-8dd1
-      stagingAppName: bbenztailwindstaging
-      productionAppName: bbenztailwindproduction
-      storageAccountName: bbenztailwindstagingstorage
+      appPlanName: tailwindtraders-website-plan
+      stagingAppName: abeltailwindstaging
+      productionAppName: abeltailwindproduction
+      storageAccountName: abeltailwindstagingstorage
     environment: 'bbenztailwinddevops'
     strategy:
       runOnce:
@@ -78,19 +78,19 @@ stages:
 
           - task: AzureKeyVault@1
             inputs:
-              azureSubscription: 'ca-bbenz-demo-test (c5bd7244-ab30-4473-8e88-d4d58b246c94)'
-              KeyVaultName: 'bbenzkeyvault'
+              azureSubscription: 'ca-abewan-demo-test (e97f6c4e-c830-479b-81ad-1aff1dd07470)'
+              KeyVaultName: 'abelappservicekeyvault2'
               SecretsFilter: '*'
 
           - task: PowerShell@2
             inputs:
               filePath: '$(Pipeline.Workspace)/drop/deployWebApp.ps1'
-              arguments: '-servicePrincipal $(servicePrincipal) -servicePrincipalSecret $(ignitefy20serviceprincipalsecret) -servicePrincipalTenantId $(servicePrincipalTenant) -azureSubscriptionName $(azureSubscriptionName) -resourceGroupName $(resourceGroupName) -location $(location) -appPlanName $(appPlanName) -stagingAppName $(stagingAppName) -productionAppName $(productionAppName) -webAppSku $(webAppSku) -storageAccountName $(storageAccountName) -storageAccountSku $(storageAccountSku)'
+              arguments: '-servicePrincipal $(servicePrincipal) -servicePrincipalSecret $(serviceprincipalsecret) -servicePrincipalTenantId $(servicePrincipalTenant) -azureSubscriptionName $(azureSubscriptionName) -resourceGroupName $(resourceGroupName) -location $(location) -appPlanName $(appPlanName) -stagingAppName $(stagingAppName) -productionAppName $(productionAppName) -webAppSku $(webAppSku) -storageAccountName $(storageAccountName) -storageAccountSku $(storageAccountSku)'
 
           - task: AzureRmWebAppDeployment@4
             inputs:
               ConnectionType: 'AzureRM'
-              azureSubscription: 'ca-bbenz-demo-test (c5bd7244-ab30-4473-8e88-d4d58b246c94)'
+              azureSubscription: 'Microsoft Azure Internal Consumption (07e42f02-499a-4fab-808a-f248bc936f7e)'
               appType: 'webApp'
               WebAppName: '$(stagingAppName)'
               packageForLinux: '$(Pipeline.Workspace)/drop/**/*.zip'
@@ -98,7 +98,7 @@ stages:
           - task: AzureRmWebAppDeployment@4
             inputs:
               ConnectionType: 'AzureRM'
-              azureSubscription: 'ca-bbenz-demo-test (c5bd7244-ab30-4473-8e88-d4d58b246c94)'
+              azureSubscription: 'Microsoft Azure Internal Consumption (07e42f02-499a-4fab-808a-f248bc936f7e)'
               appType: 'webApp'
               WebAppName: '$(productionAppName)'
               packageForLinux: '$(Pipeline.Workspace)/drop/**/*.zip'
